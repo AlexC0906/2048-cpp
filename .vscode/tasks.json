@@ -1,21 +1,19 @@
 {
-  "version": "2.0.0",
-  "tasks": [
-    {
-      "label": "build",
-      "type": "shell",
-      "command": "g++",
-      "args": [
-        "main.cpp",
-        "game.cpp",
-        "-o",
-        "joc2048"
-      ],
-      "group": {
-        "kind": "build",
-        "isDefault": true
-      },
-      "problemMatcher": ["$gcc"]
-    }
-  ]
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "build project",
+            "type": "shell",
+            "command": "cmd.exe",
+            "args": [
+                "/C",
+                "taskkill /F /IM main.exe >nul 2>&1 && del main.exe && g++ -g src/main.cpp src/game.cpp -o main.exe"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": ["$gcc"]
+        }
+    ]
 }

@@ -7,5 +7,7 @@ int main() {
     std::cout << "Welcome to 2048!\n";
     Game game;
     game.run();
+    // Show final best score on exit
+    std::cout << "Final Best Score: " << game.getBestScore() << std::endl;
     return 0;
 }

@@ -1,27 +1,47 @@
 #include <iostream>
+#include <fstream>
 #include "game.hpp"
 #include <vector>
 //srand(time(0));
 Game::Game() : score(0) {
+    // load best score
+    std::ifstream inFile("src/bestscore.txt");
+    if (inFile) inFile >> bestScore;
+    inFile.close();
+    // ensure the file exists with current bestScore (even if zero)
+    std::ofstream outInit("src/bestscore.txt");
+    outInit << bestScore;
+    outInit.close();
     // Inițializează tabla cu 0
-    for (int i = 0; i < 4; ++i)
-        for (int j = 0; j < 4; ++j)
+    for (int i = 0; i < 4; ++i) {
+        for (int j = 0; j < 4; ++j) {
             board[i][j] = 0;
-
+        }
+    }
     // Adaugă două tile-uri la început
     board[0][0] = 2;
     board[1][1] = 2;
 }
 
 void Game::drawBoard() {
-    system("clear"); // sau "cls" pentru Windows
+    #ifdef _WIN32
+        system("cls");
+    #else
+        system("clear");
+    #endif
     for (int i = 0; i < 4; ++i) {
         for (int j = 0; j < 4; ++j) {
-            std::cout << "| " << (board[i][j] ? board[i][j] : ' ') << " ";
+            std::cout << "| ";
+            if (board[i][j] != 0)
+                std::cout << board[i][j] << " ";
+            else
+                std::cout << "  ";
         }
         std::cout << "|\n";
     }
-     std::cout << "\nScore: " << score << "\n";
+    std::cout << std::endl;
+    std::cout << "Score: " << score << std::endl;
+    std::cout << "Best Score: " << bestScore << std::endl;
 }
 void Game::moveUp() {
     for (int col = 0; col < 4; ++col) {
@@ -36,7 +56,7 @@ void Game::moveUp() {
         }
 
         // 2. Combinare valorile egale
-        for (int i = 0; i < currentColumn.size() - 1; ++i) {
+        for (size_t i = 0; i + 1 < currentColumn.size(); ++i) {
             if (currentColumn[i] == currentColumn[i + 1]) {
                 currentColumn[i] *= 2;
                 score += currentColumn[i]; // Actualizăm scorul
@@ -74,7 +94,7 @@ void Game::moveLeft() {
         }
 
         // 2. Combinare valorile egale
-        for (int i = 0; i < currentRow.size() - 1; ++i) {
+        for (size_t i = 0; i + 1 < currentRow.size(); ++i) {
             if (currentRow[i] == currentRow[i + 1]) {
                 currentRow[i] *= 2;
                 score += currentRow[i]; // Actualizăm scorul
@@ -111,7 +131,7 @@ void Game::moveDown() {
         }
 
         // 2. Combinare valorile egale
-        for (int i = 0; i < currentColumn.size() - 1; ++i) {
+        for (size_t i = 0; i + 1 < currentColumn.size(); ++i) {
             if (currentColumn[i] == currentColumn[i + 1]) {
                 currentColumn[i] *= 2;
                 score += currentColumn[i]; // Actualizăm scorul
@@ -148,7 +168,7 @@ void Game::moveRight() {
         }
 
         // 2. Combinare valorile egale
-        for (int i = 0; i < currentRow.size() - 1; ++i) {
+        for (size_t i = 0; i + 1 < currentRow.size(); ++i) {
             if (currentRow[i] == currentRow[i + 1]) {
                 currentRow[i] *= 2;
                 score += currentRow[i]; // Actualizăm scorul
@@ -224,9 +244,15 @@ void Game::handleInput(char input) {
 
 void Game::updateGame() {
     if(ok){
-    randomTile();
-    ok = false; // Resetează flag-ul pentru a evita adăugarea repetată a tile-urilor
-} // Adaugă un nou tile după fiecare mutare
+        randomTile();
+        ok = false; // Resetează flag-ul pentru a evita adăugarea repetată a tile-urilor
+    } // Adaugă un nou tile după fiecare mutare
+    // if player beat the previous best, update file
+    if (score > bestScore) {
+        bestScore = score;
+        std::ofstream outFile("src/bestscore.txt");
+        outFile << bestScore;
+    }
     if (isGameOver()) {
         drawBoard();
         std::cout << "Game Over! No more moves available.\n";
@@ -240,9 +266,15 @@ void Game::run() {
         drawBoard();
         std::cout << "Move (w/a/s/d): ";
         std::cin >> input;
-        if (input == 'q') break;
+        if (input == 'q') {
+            updateGame(); // save if beaten
+            break;
+        }
         handleInput(input);
         updateGame();
     }
+    // Save best score on exit (ensures file exists)
+    std::ofstream outFile("src/bestscore.txt");
+    outFile << bestScore;
 }
 

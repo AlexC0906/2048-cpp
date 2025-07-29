@@ -5,6 +5,7 @@ class Game {
 public:
     Game();
     void run();
+    int getBestScore() const { return bestScore; }
 private:
     void drawBoard();
     void moveUp();
@@ -13,10 +14,11 @@ private:
     void moveRight();
     void handleInput(char input);
     void updateGame();
-    int board[4][4];
+    int board[4][4] = {}; 
     void randomTile();
     bool isGameOver() const;
     int score;
+    int bestScore = 0; 
     bool ok = false;
 };
 
