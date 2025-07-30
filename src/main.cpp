@@ -44,6 +44,19 @@ int main() {
         bool gameOverScreen = false;
        
         bool victoryScreen = false;
+        // Dark mode 
+        bool darkMode = false;
+        sf::RectangleShape themeButton(sf::Vector2f(80, 30));
+        themeButton.setFillColor(sf::Color(187, 173, 160));
+      
+       themeButton.setPosition((420 - 80) / 2.5, (460 - 30)/40);
+        sf::Text themeText("Dark", font, 16);
+        themeText.setFillColor(sf::Color::Black);
+        {
+            auto tbb = themeText.getLocalBounds();
+            themeText.setPosition(themeButton.getPosition().x + (80 - tbb.width)/2,
+                                  themeButton.getPosition().y + (30 - tbb.height)/2 - 2);
+        }
 
         auto getColor = [&](int v) {
             switch (v) {
@@ -68,6 +81,17 @@ int main() {
             while (window.pollEvent(event)) {
                 if (event.type == sf::Event::Closed)
                     window.close();
+               
+                if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left) {
+                    sf::Vector2f mpos(event.mouseButton.x, event.mouseButton.y);
+                    if (themeButton.getGlobalBounds().contains(mpos)) {
+                        darkMode = !darkMode;
+                        themeText.setString(darkMode ? "Light" : "Dark");
+                        auto tbb = themeText.getLocalBounds();
+                        themeText.setPosition(themeButton.getPosition().x + (80 - tbb.width)/2,
+                                              themeButton.getPosition().y + (30 - tbb.height)/2 - 2);
+                    }
+                }
                 if (event.type == sf::Event::KeyPressed) {
                     char input = 0;
                     if (event.key.code == sf::Keyboard::W) input = 'w';
@@ -98,7 +122,7 @@ int main() {
                                     if (pre[r][c] != 0 && post[r][c] != pre[r][c]) {
                                         int val = pre[r][c];
                                         
-                                        for (int rr = 0; rr < 4; ++rr) for (int cc = 0; cc < 4; ++cc) {
+                            for (int rr = 0; rr < 4; ++rr) for (int cc = 0; cc < 4; ++cc) {
                                             if (!usedDest[rr*4+cc] && post[rr][cc] == val && pre[rr][cc] == 0) {
                                                 moves.push_back({{c, r}, {cc, rr}, val});
                                                 usedDest[rr*4+cc] = true;
@@ -154,16 +178,46 @@ int main() {
                 }
             }
 
-            window.clear(sf::Color(250, 248, 239));
+            window.clear(darkMode ? sf::Color::Black : sf::Color(250, 248, 239));
             
             sf::Text scoreText("Score: " + to_string(game.getScore()), font, 20);
-            scoreText.setFillColor(sf::Color::Black);
+            scoreText.setFillColor(darkMode ? sf::Color::White : sf::Color::Black);
             scoreText.setPosition(10, 10);
             window.draw(scoreText);
             sf::Text bestText("Best: " + to_string(game.getBestScore()), font, 20);
-            bestText.setFillColor(sf::Color::Black);
+            bestText.setFillColor(darkMode ? sf::Color::White : sf::Color::Black);
             bestText.setPosition(250, 10);
             window.draw(bestText);
+           
+            themeButton.setFillColor(darkMode ? sf::Color::White : sf::Color::Black);
+            themeText.setFillColor(darkMode ? sf::Color::Black : sf::Color::White);
+            {
+                const float r = 8.f;
+                sf::CircleShape corner(r);
+                corner.setPointCount(16);
+                corner.setFillColor(themeButton.getFillColor());
+                // Draw corners
+                for (int i = 0; i < 4; ++i) {
+                    sf::Vector2f pos = themeButton.getPosition() + sf::Vector2f(
+                        (i%2)*(themeButton.getSize().x - 2*r),
+                        (i/2)*(themeButton.getSize().y - 2*r)
+                    );
+                    corner.setPosition(pos);
+                    window.draw(corner);
+                }
+                
+                sf::RectangleShape rectH(sf::Vector2f(themeButton.getSize().x - 2*r, themeButton.getSize().y));
+                rectH.setFillColor(themeButton.getFillColor());
+                rectH.setPosition(themeButton.getPosition().x + r, themeButton.getPosition().y);
+                window.draw(rectH);
+                
+                sf::RectangleShape rectV(sf::Vector2f(themeButton.getSize().x, themeButton.getSize().y - 2*r));
+                rectV.setFillColor(themeButton.getFillColor());
+                rectV.setPosition(themeButton.getPosition().x, themeButton.getPosition().y + r);
+                window.draw(rectV);
+                
+                window.draw(themeText);
+            }
             
             const float tileSize = 90.f;
             const float gap = 10.f;
@@ -302,7 +356,7 @@ int main() {
             }
         }
         window.display();
-        // detectează sfârșitul jocului (victorie sau fără mutări)
+        // detectează sfârșitul jocului (victorie sau game over)
         if (game.isFinished()) {
             if (game.win) victoryScreen = true;
             else gameOverScreen = true;
