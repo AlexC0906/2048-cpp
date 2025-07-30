@@ -42,6 +42,8 @@ int main() {
         sf::Clock mergeClock;
         const float MERGE_DURATION = 0.2f;
         bool gameOverScreen = false;
+       
+        bool victoryScreen = false;
 
         auto getColor = [&](int v) {
             switch (v) {
@@ -302,7 +304,8 @@ int main() {
         window.display();
         // detectează sfârșitul jocului (victorie sau fără mutări)
         if (game.isFinished()) {
-            gameOverScreen = true;
+            if (game.win) victoryScreen = true;
+            else gameOverScreen = true;
             break;
         }
         // detectează lipsa celulelor goale => sfârșit joc
@@ -314,14 +317,16 @@ int main() {
             if (anyEmpty) break;
         }
         if (!anyEmpty) {
-            gameOverScreen = true;
+            if (game.win) victoryScreen = true;
+            else gameOverScreen = true;
             break;
         }
     }
 
     // Ecran de sfârșit joc
-    sf::Text overText("Game Over!", font, 50);
-    overText.setFillColor(sf::Color::Black);
+    // Afișează titlu de sfârșit: victorie sau game over
+    sf::Text overText(victoryScreen ? "You Win!" : "Game Over!", font, 50);
+    overText.setFillColor(victoryScreen ? sf::Color::Green : sf::Color::Black);
     auto b = overText.getLocalBounds();
     overText.setPosition((420 - b.width)/2, 100);
     sf::RectangleShape button(sf::Vector2f(200, 50));

@@ -227,6 +227,7 @@ void Game::finishedGame() {
         {
             if(board[i][j]==2048) {
                 cout<<"Congratulations! You've reached 2048!\n";
+                win=true;
                 finished=true; 
                 return; 
             }

@@ -9,7 +9,7 @@ public:
     int getBestScore() const { return bestScore; }
     bool isFinished() const { return finished; }
     bool isNewHigh() const { return newHigh; }
-
+    bool win = false; 
     // integrare SFML 
     void handleInput(char input);
     void updateGame();
