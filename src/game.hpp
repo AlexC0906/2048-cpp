@@ -17,6 +17,7 @@ private:
     void moveRight();
     void handleInput(char input);
     void updateGame();
+    void finishedGame();
     int board[4][4] = {};
     bool finished = false; 
     void randomTile();

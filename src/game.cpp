@@ -50,6 +50,7 @@ void Game::drawBoard() {
     cout << "Best Score: " << bestScore << endl;
 }
 void Game::moveUp() {
+    bool moved = false;
     for (int col = 0; col < 4; ++col) {
         vector<int> currentColumn;
 
@@ -79,15 +80,16 @@ void Game::moveUp() {
 
         // 4. Scriem înapoi în matrice
         for (int row = 0; row < 4; ++row) {
+            int oldVal = board[row][col];
             board[row][col] = newColumn[row];
-            if(newColumn[row] != 0) {
-                ok = true; // Setăm flag-ul dacă am făcut o mutare validă
-            }
+            if (board[row][col] != oldVal) moved = true; 
         }
     }
+    if (moved) ok = true;
 }
 
 void Game::moveLeft() {
+    bool moved = false;
     for (int row = 0; row < 4; ++row) {
         vector<int> currentRow;
 
@@ -117,14 +119,15 @@ void Game::moveLeft() {
 
         // 4. Scriem înapoi în matrice
         for (int col = 0; col < 4; ++col) {
+            int oldVal = board[row][col];
             board[row][col] = newRow[col];
-            if(newRow[col] != 0) {
-                ok = true; // Setăm flag-ul dacă am făcut o mutare validă
-            }
+            if (board[row][col] != oldVal) moved = true; 
         }
     }
+    if (moved) ok = true;
 }
 void Game::moveDown() {
+    bool moved = false;
     for (int col = 0; col < 4; ++col) {
         vector<int> currentColumn;
 
@@ -154,14 +157,15 @@ void Game::moveDown() {
 
         // 4. Scriem înapoi în matrice
         for (int row = 3; row >= 0; --row) {
+            int oldVal = board[row][col];
             board[row][col] = newColumn[3 - row];
-            if(newColumn[3 - row] != 0) {
-                ok = true; // Setăm flag-ul dacă am făcut o mutare validă
-            }
+            if (board[row][col] != oldVal) moved = true; 
         }
+        if (moved) ok = true;
     }
 }
 void Game::moveRight() {
+    bool moved = false;
     for (int row = 0; row < 4; ++row) {
         vector<int> currentRow;
 
@@ -191,11 +195,11 @@ void Game::moveRight() {
 
         // 4. Scriem înapoi în matrice
         for (int col = 3; col >= 0; --col) {
+            int oldVal = board[row][col];
             board[row][col] = newRow[3 - col];
-            if(newRow[3 - col] != 0) {
-                ok = true; // Setăm flag-ul dacă am făcut o mutare validă
-            }
+            if (board[row][col] != oldVal) moved = true; 
         }
+        if (moved) ok = true; // Setăm flag-ul dacă am făcut o mutare validă
     }
 }
 void Game::randomTile() {
@@ -214,6 +218,19 @@ void Game::randomTile() {
     if (count > 0) {
         int pos = emptyTiles[rand() % count];
         board[pos / 4][pos % 4] = (rand() % 10 < 9) ? 2 : 4; // Plasează un tile de 2 sau 4
+    }
+}
+void Game::finishedGame() {
+    for(int i=0;i<4;i++)
+    {
+        for(int j=0;j<4;j++)
+        {
+            if(board[i][j]==2048) {
+                cout<<"Congratulations! You've reached 2048!\n";
+                finished=true; 
+                return; 
+            }
+        }
     }
 }
 bool Game::isGameOver() const {
@@ -277,7 +294,9 @@ void Game::run() {
             return; 
         }
         handleInput(input);
+         finishedGame();
         updateGame();
+       
         if (finished) break; 
     }
     
