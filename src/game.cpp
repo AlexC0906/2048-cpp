@@ -173,7 +173,7 @@ void Game::moveRight() {
         for (int col = 3; col >= 0; --col) {
             if (board[row][col] != 0) {
                 currentRow.push_back(board[row][col]);
-                ok = true;
+                
             }
         }
 

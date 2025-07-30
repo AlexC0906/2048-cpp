@@ -9,15 +9,18 @@ public:
     int getBestScore() const { return bestScore; }
     bool isFinished() const { return finished; }
     bool isNewHigh() const { return newHigh; }
+
+    // integrare SFML 
+    void handleInput(char input);
+    void updateGame();
+    void finishedGame();
+    int getTile(int row, int col) const { return board[row][col]; }
 private:
     void drawBoard();
     void moveUp();
     void moveLeft();
     void moveDown();
     void moveRight();
-    void handleInput(char input);
-    void updateGame();
-    void finishedGame();
     int board[4][4] = {};
     bool finished = false; 
     void randomTile();

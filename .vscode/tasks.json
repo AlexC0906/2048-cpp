@@ -4,7 +4,7 @@
         {
             "label": "build project",
             "type": "shell",
-        "command": "taskkill /F /IM main.exe >nul 2>&1 & del main.exe >nul 2>&1 & g++ -g src/main.cpp src/game.cpp -o main.exe",
+        "command": "taskkill /F /IM main.exe >nul 2>&1 & del main.exe >nul 2>&1 & g++ -g src/main.cpp src/game.cpp -o main.exe -I D:/SFML-2.5.1/include -L D:/SFML-2.5.1/lib -lsfml-graphics -lsfml-window -lsfml-system -lwinmm -lopengl32 -lgdi32 & xcopy /Y \"D:\\SFML-2.5.1\\bin\\*.dll\" \".\" >nul",
         "options": {
             "shell": {
                 "executable": "cmd.exe",
