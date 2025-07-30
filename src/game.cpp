@@ -2,14 +2,16 @@
 #include <fstream>
 #include "game.hpp"
 #include <vector>
+#include <cstdlib>
 //srand(time(0));
+using namespace std;
 Game::Game() : score(0) {
-    // load best score
-    std::ifstream inFile("src/bestscore.txt");
+    
+    ifstream inFile("src/bestscore.txt");
     if (inFile) inFile >> bestScore;
     inFile.close();
-    // ensure the file exists with current bestScore (even if zero)
-    std::ofstream outInit("src/bestscore.txt");
+    // Inițializează bestScore dacă fișierul nu există
+    ofstream outInit("src/bestscore.txt");
     outInit << bestScore;
     outInit.close();
     // Inițializează tabla cu 0
@@ -18,9 +20,13 @@ Game::Game() : score(0) {
             board[i][j] = 0;
         }
     }
-    // Adaugă două tile-uri la început
-    board[0][0] = 2;
-    board[1][1] = 2;
+
+    // Adaugă două tile-uri la început în poziții aleatorii
+    int first = rand() % 16;
+    int second;
+    do { second = rand() % 16; } while (second == first);
+    board[first/4][first%4] = 2;
+    board[second/4][second%4] = 2;
 }
 
 void Game::drawBoard() {
@@ -31,21 +37,21 @@ void Game::drawBoard() {
     #endif
     for (int i = 0; i < 4; ++i) {
         for (int j = 0; j < 4; ++j) {
-            std::cout << "| ";
+            cout << "| ";
             if (board[i][j] != 0)
-                std::cout << board[i][j] << " ";
+                cout << board[i][j] << " ";
             else
-                std::cout << "  ";
+                cout << "  ";
         }
-        std::cout << "|\n";
+        cout << "|\n";
     }
-    std::cout << std::endl;
-    std::cout << "Score: " << score << std::endl;
-    std::cout << "Best Score: " << bestScore << std::endl;
+    cout << endl;
+    cout << "Score: " << score << endl;
+    cout << "Best Score: " << bestScore << endl;
 }
 void Game::moveUp() {
     for (int col = 0; col < 4; ++col) {
-        std::vector<int> currentColumn;
+        vector<int> currentColumn;
 
         // 1. Compresie - extragem toate valorile nenule
         for (int row = 0; row < 4; ++row) {
@@ -83,7 +89,7 @@ void Game::moveUp() {
 
 void Game::moveLeft() {
     for (int row = 0; row < 4; ++row) {
-        std::vector<int> currentRow;
+        vector<int> currentRow;
 
         // 1. Compresie - extragem toate valorile nenule
         for (int col = 0; col < 4; ++col) {
@@ -103,7 +109,7 @@ void Game::moveLeft() {
         }
 
         // 3. A doua compresie (după combinare)
-        std::vector<int> newRow;
+        vector<int> newRow;
         for (int val : currentRow) {
             if (val != 0) newRow.push_back(val);
         }
@@ -120,7 +126,7 @@ void Game::moveLeft() {
 }
 void Game::moveDown() {
     for (int col = 0; col < 4; ++col) {
-        std::vector<int> currentColumn;
+        vector<int> currentColumn;
 
         // 1. Compresie - extragem toate valorile nenule
         for (int row = 3; row >= 0; --row) {
@@ -140,7 +146,7 @@ void Game::moveDown() {
         }
 
         // 3. A doua compresie (după combinare)
-        std::vector<int> newColumn;
+        vector<int> newColumn;
         for (int val : currentColumn) {
             if (val != 0) newColumn.push_back(val);
         }
@@ -157,7 +163,7 @@ void Game::moveDown() {
 }
 void Game::moveRight() {
     for (int row = 0; row < 4; ++row) {
-        std::vector<int> currentRow;
+        vector<int> currentRow;
 
         // 1. Compresie - extragem toate valorile nenule
         for (int col = 3; col >= 0; --col) {
@@ -177,7 +183,7 @@ void Game::moveRight() {
         }
 
         // 3. A doua compresie (după combinare)
-        std::vector<int> newRow;
+        vector<int> newRow;
         for (int val : currentRow) {
             if (val != 0) newRow.push_back(val);
         }
@@ -211,15 +217,13 @@ void Game::randomTile() {
     }
 }
 bool Game::isGameOver() const {
-    // Verifică dacă există cel puțin o mutare posibilă
+    
     for (int i = 0; i < 4; ++i) {
         for (int j = 0; j < 4; ++j) {
-            if (board[i][j] == 0) return false; // Există un tile gol
-            if (i < 3 && board[i][j] == board[i + 1][j]) return false; // Verifică jos
-            if (j < 3 && board[i][j] == board[i][j + 1]) return false; // Verifică dreapta
+            if (board[i][j] == 0) return false; 
         }
     }
-    return true; // Nu mai există mutări posibile
+    return true; 
 }
 void Game::handleInput(char input) {
     switch (input) {
@@ -247,16 +251,18 @@ void Game::updateGame() {
         randomTile();
         ok = false; // Resetează flag-ul pentru a evita adăugarea repetată a tile-urilor
     } // Adaugă un nou tile după fiecare mutare
-    // if player beat the previous best, update file
+    
     if (score > bestScore) {
         bestScore = score;
-        std::ofstream outFile("src/bestscore.txt");
+        newHigh = true;
+        ofstream outFile("src/bestscore.txt");
         outFile << bestScore;
     }
     if (isGameOver()) {
         drawBoard();
-        std::cout << "Game Over! No more moves available.\n";
-        exit(0); // Termină jocul
+        cout << "Game Over! No more moves available.\n";
+        finished = true;
+        return;
     }
 }
 
@@ -264,17 +270,18 @@ void Game::run() {
     char input;
     while (true) {
         drawBoard();
-        std::cout << "Move (w/a/s/d): ";
-        std::cin >> input;
+        cout << "Move (w/a/s/d): ";
+        cin >> input;
         if (input == 'q') {
-            updateGame(); // save if beaten
-            break;
+           // iesire
+            return; 
         }
         handleInput(input);
         updateGame();
+        if (finished) break; 
     }
-    // Save best score on exit (ensures file exists)
-    std::ofstream outFile("src/bestscore.txt");
+    
+    ofstream outFile("src/bestscore.txt");
     outFile << bestScore;
 }
 

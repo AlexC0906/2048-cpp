@@ -4,11 +4,13 @@
         {
             "label": "build project",
             "type": "shell",
-            "command": "cmd.exe",
-            "args": [
-                "/C",
-                "taskkill /F /IM main.exe >nul 2>&1 && del main.exe && g++ -g src/main.cpp src/game.cpp -o main.exe"
-            ],
+        "command": "taskkill /F /IM main.exe >nul 2>&1 & del main.exe >nul 2>&1 & g++ -g src/main.cpp src/game.cpp -o main.exe",
+        "options": {
+            "shell": {
+                "executable": "cmd.exe",
+                "args": ["/C"]
+            }
+        },
             "group": {
                 "kind": "build",
                 "isDefault": true
