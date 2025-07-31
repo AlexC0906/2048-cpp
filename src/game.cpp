@@ -10,18 +10,18 @@ Game::Game() : score(0) {
     ifstream inFile("src/bestscore.txt");
     if (inFile) inFile >> bestScore;
     inFile.close();
-    // Inițializează bestScore dacă fișierul nu există
+    // Initialize bestScore if the file does not exist
     ofstream outInit("src/bestscore.txt");
     outInit << bestScore;
     outInit.close();
-    // Inițializează tabla cu 0
+    // Initialize the board with 0
     for (int i = 0; i < 4; ++i) {
         for (int j = 0; j < 4; ++j) {
             board[i][j] = 0;
         }
     }
 
-    // Adaugă două tile-uri la început în poziții aleatorii
+    // Add two tiles at the beginning in random positions
     int first = rand() % 16;
     int second;
     do { second = rand() % 16; } while (second == first);
@@ -54,7 +54,7 @@ void Game::moveUp() {
     for (int col = 0; col < 4; ++col) {
         vector<int> currentColumn;
 
-        // 1. Compresie - extragem toate valorile nenule
+        // 1. Compression - extract all non-zero values
         for (int row = 0; row < 4; ++row) {
             if (board[row][col] != 0) {
                 currentColumn.push_back(board[row][col]);
@@ -62,23 +62,23 @@ void Game::moveUp() {
             }
         }
 
-        // 2. Combinare valorile egale
+        // 2. Combine equal values
         for (size_t i = 0; i + 1 < currentColumn.size(); ++i) {
             if (currentColumn[i] == currentColumn[i + 1]) {
                 currentColumn[i] *= 2;
-                score += currentColumn[i]; // Actualizăm scorul
-                currentColumn[i + 1] = 0; // marcăm al doilea pentru ștergere
+                score += currentColumn[i]; // Update score
+                currentColumn[i + 1] = 0; // mark second for deletion
             }
         }
 
-        // 3. A doua compresie (după combinare)
+        // 3. Second compression (after combining)
         std::vector<int> newColumn;
         for (int val : currentColumn) {
             if (val != 0) newColumn.push_back(val);
         }
-        while (newColumn.size() < 4) newColumn.push_back(0); // umplem cu zerouri
+        while (newColumn.size() < 4) newColumn.push_back(0); // fill with zeros
 
-        // 4. Scriem înapoi în matrice
+        // 4. Write back into the matrix
         for (int row = 0; row < 4; ++row) {
             int oldVal = board[row][col];
             board[row][col] = newColumn[row];
@@ -93,7 +93,7 @@ void Game::moveLeft() {
     for (int row = 0; row < 4; ++row) {
         vector<int> currentRow;
 
-        // 1. Compresie - extragem toate valorile nenule
+        // 1. Compression - extract all non-zero values
         for (int col = 0; col < 4; ++col) {
             if (board[row][col] != 0) {
                 currentRow.push_back(board[row][col]);
@@ -101,23 +101,23 @@ void Game::moveLeft() {
             }
         }
 
-        // 2. Combinare valorile egale
+        // 2. Combine equal values
         for (size_t i = 0; i + 1 < currentRow.size(); ++i) {
             if (currentRow[i] == currentRow[i + 1]) {
                 currentRow[i] *= 2;
-                score += currentRow[i]; // Actualizăm scorul
-                currentRow[i + 1] = 0; // marcăm al doilea pentru ștergere
+                score += currentRow[i]; // Update score
+                currentRow[i + 1] = 0; // mark second for deletion
             }
         }
 
-        // 3. A doua compresie (după combinare)
+        // 3. Second compression (after combining)
         vector<int> newRow;
         for (int val : currentRow) {
             if (val != 0) newRow.push_back(val);
         }
-        while (newRow.size() < 4) newRow.push_back(0); // umplem cu zerouri
+        while (newRow.size() < 4) newRow.push_back(0); // fill with zeros
 
-        // 4. Scriem înapoi în matrice
+        // 4. Write back into the matrix
         for (int col = 0; col < 4; ++col) {
             int oldVal = board[row][col];
             board[row][col] = newRow[col];
@@ -131,7 +131,7 @@ void Game::moveDown() {
     for (int col = 0; col < 4; ++col) {
         vector<int> currentColumn;
 
-        // 1. Compresie - extragem toate valorile nenule
+        // 1. Compression - extract all non-zero values
         for (int row = 3; row >= 0; --row) {
             if (board[row][col] != 0) {
                 currentColumn.push_back(board[row][col]);
@@ -139,23 +139,23 @@ void Game::moveDown() {
             }
         }
 
-        // 2. Combinare valorile egale
+        // 2. Combine equal values
         for (size_t i = 0; i + 1 < currentColumn.size(); ++i) {
             if (currentColumn[i] == currentColumn[i + 1]) {
                 currentColumn[i] *= 2;
-                score += currentColumn[i]; // Actualizăm scorul
-                currentColumn[i + 1] = 0; // marcăm al doilea pentru ștergere
+                score += currentColumn[i]; // Update score
+                currentColumn[i + 1] = 0; // mark second for deletion
             }
         }
 
-        // 3. A doua compresie (după combinare)
+        // 3. Second compression (after combining)
         vector<int> newColumn;
         for (int val : currentColumn) {
             if (val != 0) newColumn.push_back(val);
         }
-        while (newColumn.size() < 4) newColumn.push_back(0); // umplem cu zerouri
+        while (newColumn.size() < 4) newColumn.push_back(0); // fill with zeros
 
-        // 4. Scriem înapoi în matrice
+        // 4. Write back into the matrix
         for (int row = 3; row >= 0; --row) {
             int oldVal = board[row][col];
             board[row][col] = newColumn[3 - row];
@@ -169,7 +169,7 @@ void Game::moveRight() {
     for (int row = 0; row < 4; ++row) {
         vector<int> currentRow;
 
-        // 1. Compresie - extragem toate valorile nenule
+        // 1. Compression - extract all non-zero values
         for (int col = 3; col >= 0; --col) {
             if (board[row][col] != 0) {
                 currentRow.push_back(board[row][col]);
@@ -177,33 +177,33 @@ void Game::moveRight() {
             }
         }
 
-        // 2. Combinare valorile egale
+        // 2. Combine equal values
         for (size_t i = 0; i + 1 < currentRow.size(); ++i) {
             if (currentRow[i] == currentRow[i + 1]) {
                 currentRow[i] *= 2;
-                score += currentRow[i]; // Actualizăm scorul
-                currentRow[i + 1] = 0; // marcăm al doilea pentru ștergere
+                score += currentRow[i]; // Update score
+                currentRow[i + 1] = 0; // mark second for deletion
             }
         }
 
-        // 3. A doua compresie (după combinare)
+        // 3. Second compression (after combining)
         vector<int> newRow;
         for (int val : currentRow) {
             if (val != 0) newRow.push_back(val);
         }
-        while (newRow.size() < 4) newRow.push_back(0); // umplem cu zerouri
+        while (newRow.size() < 4) newRow.push_back(0); // fill with zeros
 
-        // 4. Scriem înapoi în matrice
+        // 4. Write back into the matrix
         for (int col = 3; col >= 0; --col) {
             int oldVal = board[row][col];
             board[row][col] = newRow[3 - col];
             if (board[row][col] != oldVal) moved = true; 
         }
-        if (moved) ok = true; // Setăm flag-ul dacă am făcut o mutare validă
+        if (moved) ok = true; // Set flag if we made a valid move
     }
 }
 void Game::randomTile() {
-    // Alege o poziție random pentru a plasa un nou tile
+    // Choose a random position to place a new tile
     int emptyTiles[16];
     int count = 0;
 
@@ -217,7 +217,7 @@ void Game::randomTile() {
 
     if (count > 0) {
         int pos = emptyTiles[rand() % count];
-        board[pos / 4][pos % 4] = (rand() % 10 < 9) ? 2 : 4; // Plasează un tile de 2 sau 4
+        board[pos / 4][pos % 4] = (rand() % 10 < 9) ? 2 : 4; // Place a tile of 2 or 4
     }
 }
 void Game::finishedGame() {
@@ -267,8 +267,8 @@ void Game::handleInput(char input) {
 void Game::updateGame() {
     if(ok){
         randomTile();
-        ok = false; // Resetează flag-ul pentru a evita adăugarea repetată a tile-urilor
-    } // Adaugă un nou tile după fiecare mutare
+        ok = false; // Reset flag to avoid repeatedly adding tiles
+    } // Add a new tile after each move
     
     if (score > bestScore) {
         bestScore = score;
@@ -291,11 +291,11 @@ void Game::run() {
         cout << "Move (w/a/s/d): ";
         cin >> input;
         if (input == 'q') {
-           // iesire
+           // exit
             return; 
         }
         handleInput(input);
-         finishedGame();
+        finishedGame();
         updateGame();
        
         if (finished) break; 
@@ -304,4 +304,3 @@ void Game::run() {
     ofstream outFile("src/bestscore.txt");
     outFile << bestScore;
 }
-

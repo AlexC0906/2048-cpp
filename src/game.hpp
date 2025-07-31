@@ -10,7 +10,7 @@ public:
     bool isFinished() const { return finished; }
     bool isNewHigh() const { return newHigh; }
     bool win = false; 
-    // integrare SFML 
+    // SFML integration
     void handleInput(char input);
     void updateGame();
     void finishedGame();

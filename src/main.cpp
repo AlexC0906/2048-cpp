@@ -4,14 +4,14 @@
 #include "game.hpp"
 #include <vector>
 #include <algorithm> 
- #include <cmath>  
- #include <cstdint>
+#include <cmath>  
+#include <cstdint>
 constexpr float PI = 3.14159265f;
 using namespace std;
 
 int main() {
     srand(static_cast<unsigned>(time(nullptr)));
-    // Inițializare fereastră și font
+    // Initialize window and font
     bool retry = false;
 
     sf::RenderWindow window(sf::VideoMode(420, 460), "2048");
@@ -21,11 +21,11 @@ int main() {
         return -1;
     }
 
-    // Buclă principală pentru Try Again
+    // Main loop for Try Again
     while (true) {
         
         Game game;
-        // Resetează flag-ul retry pentru această sesiune
+        // Reset retry flag for this session
         retry = false;
         sf::Clock spawnClock;
         bool spawning = false;
@@ -49,7 +49,7 @@ int main() {
         sf::RectangleShape themeButton(sf::Vector2f(80, 30));
         themeButton.setFillColor(sf::Color(187, 173, 160));
       
-       themeButton.setPosition((420 - 80) / 2.5, (460 - 30)/40);
+        themeButton.setPosition((420 - 80) / 2.5, (460 - 30)/40);
         sf::Text themeText("Dark", font, 16);
         themeText.setFillColor(sf::Color::Black);
         {
@@ -122,7 +122,7 @@ int main() {
                                     if (pre[r][c] != 0 && post[r][c] != pre[r][c]) {
                                         int val = pre[r][c];
                                         
-                            for (int rr = 0; rr < 4; ++rr) for (int cc = 0; cc < 4; ++cc) {
+                                        for (int rr = 0; rr < 4; ++rr) for (int cc = 0; cc < 4; ++cc) {
                                             if (!usedDest[rr*4+cc] && post[rr][cc] == val && pre[rr][cc] == 0) {
                                                 moves.push_back({{c, r}, {cc, rr}, val});
                                                 usedDest[rr*4+cc] = true;
@@ -356,13 +356,13 @@ int main() {
             }
         }
         window.display();
-        // detectează sfârșitul jocului (victorie sau game over)
+        // Detect end of game (victory or game over)
         if (game.isFinished()) {
             if (game.win) victoryScreen = true;
             else gameOverScreen = true;
             break;
         }
-        // detectează lipsa celulelor goale => sfârșit joc
+        // Detect absence of empty cells => end of game
         bool anyEmpty = false;
         for (int r = 0; r < 4; ++r) {
             for (int c = 0; c < 4; ++c) {
@@ -377,8 +377,8 @@ int main() {
         }
     }
 
-    // Ecran de sfârșit joc
-    // Afișează titlu de sfârșit: victorie sau game over
+    // End game screen
+    // Display end title: victory or game over
     sf::Text overText(victoryScreen ? "You Win!" : "Game Over!", font, 50);
     overText.setFillColor(victoryScreen ? sf::Color::Green : sf::Color::Black);
     auto b = overText.getLocalBounds();
@@ -391,7 +391,7 @@ int main() {
     auto bt = retryText.getLocalBounds();
     retryText.setPosition(button.getPosition().x + (200 - bt.width)/2,
                           button.getPosition().y + (50 - bt.height)/2 - 5);
-    // Așteaptă click sau închidere
+    // Wait for click or close
     while (window.isOpen()) {
         sf::Event e;
         while (window.pollEvent(e)) {
@@ -404,18 +404,18 @@ int main() {
         if (!window.isOpen() || retry) break;
         window.clear(sf::Color(250, 248, 239));
         window.draw(overText);
-        // Desenează buton rotunjit
+        // Draw rounded button
         const float r = 10.f;
         sf::CircleShape corner(r);
         corner.setPointCount(16);
         corner.setFillColor(button.getFillColor());
-        // colțuri
+        // corners
         for (int i = 0; i < 4; ++i) {
             sf::Vector2f pos = button.getPosition() + sf::Vector2f((i%2)*(200-2*r), (i/2)*(50-2*r));
             corner.setPosition(pos);
             window.draw(corner);
         }
-        // umple dreptunghiurile
+        // fill rectangles
         sf::RectangleShape rectH(sf::Vector2f(200 - 2*r, 50));
         rectH.setFillColor(button.getFillColor());
         rectH.setPosition(button.getPosition().x + r, button.getPosition().y);
